@@ -25,7 +25,7 @@ module Homebrew
       onoe "#{name} does not have a version \"#{version}\" in the Cellar."
 
       versions = rack.subdirs.map { |d| Keg.new(d).version }
-      puts "Versions available: #{versions.join(', ')}"
+      puts "Versions available: #{versions.join(", ")}"
 
       exit 3
     end
@@ -40,7 +40,7 @@ module Homebrew
     keg = Keg.new(rack+version)
 
     # Link new version, if not keg-only
-    if keg_only?(canonical_name)
+    if keg_only?(rack)
       keg.optlink
       puts "Opt link created for #{keg}"
     else

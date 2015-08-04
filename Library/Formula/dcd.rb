@@ -1,8 +1,11 @@
 class Dcd < Formula
+  desc "Auto-complete program for the D programming language"
   homepage "https://github.com/Hackerpilot/DCD"
   url "https://github.com/Hackerpilot/DCD.git",
       :tag => "v0.6.0",
       :revision => "633b1667ef223e6eda7bcfd2d2d746f59036571f"
+
+  head "https://github.com/Hackerpilot/dcd.git", :shallow => false
 
   bottle do
     sha256 "b2bfea971d1cce8f221a524d3ddd10f5b2e6775acfe29754d765785d875a6bb6" => :yosemite

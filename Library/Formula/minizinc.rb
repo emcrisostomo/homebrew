@@ -1,4 +1,5 @@
 class Minizinc < Formula
+  desc "Medium-level constraint modeling language"
   homepage "http://www.minizinc.org"
   head "https://github.com/MiniZinc/libminizinc.git", :branch => "develop"
 
@@ -17,7 +18,6 @@ class Minizinc < Formula
     sha256 "58bf476cbe2181e3a6420aa709ade2aecde6b400a70f291aeb7c3a7e747d1e05" => :mavericks
     sha256 "d5d00aeaf5f6bb6b3f2cb0d78a29271d98fa73deeb7d939055992f631da78f34" => :mountain_lion
   end
-
 
   depends_on :arch => :x86_64
   depends_on "cmake" => :build

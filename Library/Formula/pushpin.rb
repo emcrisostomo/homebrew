@@ -1,15 +1,16 @@
 class Pushpin < Formula
+  desc "Reverse proxy for realtime web services"
   homepage "http://pushpin.org"
-  url "http://packages.fanout.io/source/pushpin-1.2.0.tar.bz2"
-  sha256 "10156a5c3a5e956569fe25d5e467e3e452fc2b6b0b63c7894fc7f6aee6c7c414"
-  revision 1
+  url "https://dl.bintray.com/fanout/source/pushpin-1.5.0.tar.bz2"
+  sha256 "9e9a05da706260bc4c96a36f9af5fdc38b78699709c83538663f00f59104ba2b"
 
   head "https://github.com/fanout/pushpin.git"
 
   bottle do
-    sha256 "e3e375fb96a6e558e27c300e18d3cd6b1535530f6ea32345554e2d2def627c6f" => :yosemite
-    sha256 "31be58a8024be381ceaddc7a2c682b2f7ee5ca952d02964abdfc2cc222224d66" => :mavericks
-    sha256 "02f82c337c06c3373fbdfb69f4066d897413e2e35011a53725331b799e0378c3" => :mountain_lion
+    cellar :any
+    sha256 "5cf360e17906df91764cb18379a429eb9541974a6c8b8bcf961302dcef0c23d3" => :yosemite
+    sha256 "bb470fe80c924be13c5f91cb3a597ddece614969df88fb79a7683b02dde7ea94" => :mavericks
+    sha256 "901b72b2601c0702d60b27e3c36ed1f7b2099a2f3784fe73a468428532271181" => :mountain_lion
   end
 
   depends_on "pkg-config" => :build
@@ -19,6 +20,12 @@ class Pushpin < Formula
   depends_on "qjson"
   depends_on "mongrel2"
   depends_on "zurl"
+
+  # MacOS versions prior to Yosemite need the latest setuptools in order to compile dependencies
+  resource "setuptools" do
+    url "https://pypi.python.org/packages/source/s/setuptools/setuptools-17.0.tar.gz"
+    sha256 "561b33819ef3da2bff89cc8b05fd9b5ea3caeb31ad588b53fdf06f886ac3d200"
+  end
 
   resource "MarkupSafe" do
     url "https://pypi.python.org/packages/source/M/MarkupSafe/MarkupSafe-0.23.tar.gz"
@@ -45,11 +52,16 @@ class Pushpin < Formula
     sha256 "55715a5d758214034db179005def47ed842da36c4c48e9e7ae59bcaffed7ca9b"
   end
 
+  resource "sortedcontainers" do
+    url "https://pypi.python.org/packages/source/s/sortedcontainers/sortedcontainers-0.9.6.tar.gz"
+    sha256 "bacaeb1c3e59c3083eec4d1198ba5625246c012e0342aafa46291632e8458dd3"
+  end
+
   def install
     ENV.prepend_create_path "PYTHONPATH", libexec/"vendor/lib/python2.7/site-packages"
 
-    %w[MarkupSafe Jinja2 pyzmq setproctitle tnetstring].each do |r|
-      resource(r).stage do
+    resources.each do |r|
+      r.stage do
         system "python", *Language::Python.setup_install_args(libexec/"vendor")
       end
     end

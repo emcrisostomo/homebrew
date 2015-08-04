@@ -1,31 +1,22 @@
 class ShadowsocksLibev < Formula
+  desc "Libev port of shadowsocks"
   homepage "https://github.com/shadowsocks/shadowsocks-libev"
-  url "https://github.com/shadowsocks/shadowsocks-libev/archive/v2.2.1.tar.gz"
-  sha256 "c8013bc56e507855913dd8972f3c629c1b0c58a7012c4c459186d7f6a0cfe953"
+  url "https://github.com/shadowsocks/shadowsocks-libev/archive/v2.2.3.tar.gz"
+  sha256 "41a4746190698fc78b8e06c0f0e3638ca0bb1180a8cb77246736d88553b277f7"
+  head "https://github.com/shadowsocks/shadowsocks-libev.git"
 
   bottle do
     cellar :any
-    sha256 "0d17f73152f9dc3cef85222a2c5ce2ed0b557e0aee528b736e7d7048a2211f90" => :yosemite
-    sha256 "ce02156eef98449192b89ddf461af130e692c008984f7763a33047b455fe96a9" => :mavericks
-    sha256 "70a1ec155396732f9e99278ffaad8951c7916d84febb40c80d225e199627ad1d" => :mountain_lion
+    revision 1
+    sha256 "2cafe87a71ff1f7b512905d583431fec8f8ab9267e05df693989326d20308333" => :yosemite
+    sha256 "cb164f15a12619af2e8c513b9a0665d911118dfacfe7d569fc94d0a67aace1de" => :mavericks
+    sha256 "16df3679c44d2e723101d36dcb589ac414b235aa9e90a386faaa021345d06122" => :mountain_lion
   end
 
-  head "https://github.com/shadowsocks/shadowsocks-libev.git"
-
-  option "with-polarssl", "Use PolarSSL instead of OpenSSL"
-
-  depends_on "polarssl" => :optional
-  depends_on "openssl" if build.without? "polarssl"
+  depends_on "openssl"
 
   def install
     args = ["--prefix=#{prefix}"]
-
-    if build.with? "polarssl"
-      polarssl = Formula["polarssl"]
-
-      args << "--with-crypto-library=polarssl"
-      args << "--with-polarssl=#{polarssl.opt_prefix}"
-    end
 
     system "./configure", *args
     system "make"

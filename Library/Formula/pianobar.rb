@@ -1,6 +1,5 @@
-require "formula"
-
 class Pianobar < Formula
+  desc "Command-line player for http://pandora.com"
   homepage "https://github.com/PromyLOPh/pianobar/"
   url "http://6xq.net/projects/pianobar/pianobar-2014.09.28.tar.bz2"
   sha256 "6bd10218ad5d68c4c761e02c729627d2581b4a6db559190e7e52dc5df177e68f"
@@ -29,7 +28,7 @@ class Pianobar < Formula
 
   def install
     # Discard Homebrew's CFLAGS as Pianobar reportedly doesn't like them
-    ENV['CFLAGS'] = "-O2 -DNDEBUG " +
+    ENV["CFLAGS"] = "-O2 -DNDEBUG " +
                     # Or it doesn't build at all
                     "-std=c99 " +
                     # build if we aren't /usr/local'

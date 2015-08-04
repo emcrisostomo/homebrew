@@ -1,20 +1,21 @@
-require "formula"
-
 class Pmd < Formula
+  desc "Source code analyzer for Java, JavaScript, and more"
   homepage "http://pmd.sourceforge.net/"
-  url "https://downloads.sourceforge.net/project/pmd/pmd/5.1.3/pmd-src-5.1.3.zip"
-  sha1 "da6023d73e078444a7b76e8a7a0cfbeb421221e4"
+  url "https://downloads.sourceforge.net/project/pmd/pmd/5.3.2/pmd-src-5.3.2.zip"
+  sha256 "721d0fbfe970d6507233517c92c4541ffa7490d8f7bf1b1ed8dafc28e5abc5b9"
+
+  depends_on "maven" => :build
 
   def install
-    rm Dir["bin/*.{bat,cmd,dll,exe}"]
+    system "mvn", "clean", "package"
 
-    doc.install "LICENSE", "NOTICE", "ReadMe.txt", "licences", Dir["docs/*"]
-    libexec.install "bin", "etc", "lib"
+    doc.install "LICENSE", "NOTICE", "README.md"
+
+    # The mvn package target produces a .zip with all the jars needed for PMD
+    safe_system "tar", "-xf", buildpath/"pmd-dist/target/pmd-bin-#{version}.zip"
+    libexec.install "pmd-bin-#{version}/bin", "pmd-bin-#{version}/lib"
 
     bin.install_symlink "#{libexec}/bin/run.sh" => "pmd"
-
-    # the run script references paths which don't account for the
-    # file structure of this brew.
     inreplace "#{libexec}/bin/run.sh", "${script_dir}/../lib", "#{libexec}/lib"
   end
 

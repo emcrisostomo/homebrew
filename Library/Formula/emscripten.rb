@@ -1,12 +1,13 @@
 class Emscripten < Formula
+  desc "LLVM bytecode to JavaScript compiler"
   homepage "https://kripken.github.io/emscripten-site/"
-  url "https://github.com/kripken/emscripten/archive/1.32.4.tar.gz"
-  sha256 "ddb75dc20cc77d93ed83f2a2c5b7ed220b5bc8d02bdfcdbbbdd95c31cab48266"
+  url "https://github.com/kripken/emscripten/archive/1.33.0.tar.gz"
+  sha256 "ff88d80d61c94f289c5020d714dfa872c018ea9ba0e8577e0d5708335375f5f4"
 
   bottle do
-    sha256 "858d9cde97970986d0a42fe90de44d12fcc191ae7b0ccb457f1c952aea7dd36b" => :yosemite
-    sha256 "5792dece7a9adfdc33863e55c1446b1d2e34202f4c0e7c49ddf171c121204b60" => :mavericks
-    sha256 "0182516af4cb4190cf61bb69f5caab94a3b1fc951e9c58a88b3999eba99d054a" => :mountain_lion
+    sha256 "a15045f4e083d785cfe276d322469796bb43e94e6ad7388a57bd907f83526551" => :yosemite
+    sha256 "8f205ed1aa87d0f2dbe99dfab669e64eb3a384791503709596d0ef92b0f45196" => :mavericks
+    sha256 "d4014e557b16ccd7df9ac57e9399c47373dd74e0b392b9333464fc290adea862" => :mountain_lion
   end
 
   head do
@@ -23,13 +24,13 @@ class Emscripten < Formula
 
   stable do
     resource "fastcomp" do
-      url "https://github.com/kripken/emscripten-fastcomp/archive/1.32.4.tar.gz"
-      sha256 "5b29c3f6cb43563762d5b130c506bc5b77b1f57130ef5edbd6e7c48bf5b349fa"
+      url "https://github.com/kripken/emscripten-fastcomp/archive/1.33.0.tar.gz"
+      sha256 "6adddb55afdd05fccedd9c82455701afcdaf5a7803ccc685a5e246df9a9890cb"
     end
 
     resource "fastcomp-clang" do
-      url "https://github.com/kripken/emscripten-fastcomp-clang/archive/1.32.4.tar.gz"
-      sha256 "98d10934d44c66ec610454cd6df0e03c83d975a52dfdb593da91da51073d541b"
+      url "https://github.com/kripken/emscripten-fastcomp-clang/archive/1.33.0.tar.gz"
+      sha256 "f935cdd46a5189147e4a2028a73fe7a2006d7dd47f86f2783c874021c1a02cac"
     end
   end
 
@@ -45,7 +46,7 @@ class Emscripten < Formula
     # OSX doesn't provide a "python2" binary so use "python" instead.
     python2_shebangs = `grep --recursive --files-with-matches ^#!/usr/bin/.*python2$ #{buildpath}`
     python2_shebang_files = python2_shebangs.lines.sort.uniq
-    python2_shebang_files.map! {|f| Pathname(f.chomp)}
+    python2_shebang_files.map! { |f| Pathname(f.chomp) }
     python2_shebang_files.reject! &:symlink?
     inreplace python2_shebang_files, %r{^(#!/usr/bin/.*python)2$}, "\\1"
 
@@ -62,7 +63,7 @@ class Emscripten < Formula
       "--enable-optimized",
       "--enable-targets=host,js",
       "--disable-assertions",
-      "--disable-bindings",
+      "--disable-bindings"
     ]
 
     cd "fastcomp" do
@@ -71,8 +72,8 @@ class Emscripten < Formula
       system "make", "install"
     end
 
-    %w(em++ em-config emar emcc emcmake emconfigure emlink.py emmake
-       emranlib emrun emscons).each do |emscript|
+    %w[em++ em-config emar emcc emcmake emconfigure emlink.py emmake
+       emranlib emrun emscons].each do |emscript|
       bin.install_symlink libexec/emscript
     end
   end

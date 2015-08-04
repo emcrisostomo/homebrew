@@ -1,4 +1,5 @@
 class Ruby < Formula
+  desc "Powerful, clean, object-oriented scripting language"
   homepage "https://www.ruby-lang.org/"
   url "http://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.2.tar.bz2"
   sha256 "f3b8ffa6089820ee5bdc289567d365e5748d4170e8aa246d2ea6576f24796535"
@@ -60,9 +61,9 @@ class Ruby < Formula
       Formula["openssl"].opt_prefix
     ]
 
-    %w[readline gdbm gmp libffi].each { |dep|
+    %w[readline gdbm gmp libffi].each do |dep|
       paths << Formula[dep].opt_prefix if build.with? dep
-    }
+    end
 
     args << "--with-opt-dir=#{paths.join(":")}"
 

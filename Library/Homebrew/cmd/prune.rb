@@ -1,5 +1,5 @@
-require 'keg'
-require 'cmd/tap'
+require "keg"
+require "cmd/tap"
 
 module Homebrew
   def prune
@@ -36,7 +36,7 @@ module Homebrew
       end
     end
 
-    repair_taps(false) unless ARGV.dry_run?
+    migrate_taps :force => true unless ARGV.dry_run?
 
     if ObserverPathnameExtension.total.zero?
       puts "Nothing pruned" if ARGV.verbose?
@@ -44,7 +44,7 @@ module Homebrew
       n, d = ObserverPathnameExtension.counts
       print "Pruned #{n} symbolic links "
       print "and #{d} directories " if d > 0
-      puts  "from #{HOMEBREW_PREFIX}"
+      puts "from #{HOMEBREW_PREFIX}"
     end unless ARGV.dry_run?
   end
 end
