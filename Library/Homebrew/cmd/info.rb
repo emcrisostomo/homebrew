@@ -22,14 +22,18 @@ module Homebrew
   def print_info
     if ARGV.named.empty?
       if HOMEBREW_CELLAR.exist?
-        count = HOMEBREW_CELLAR.subdirs.length
+        count = Formula.racks.length
         puts "#{count} keg#{plural(count)}, #{HOMEBREW_CELLAR.abv}"
       end
     else
       ARGV.named.each_with_index do |f, i|
         puts unless i == 0
         begin
-          info_formula Formulary.factory(f)
+          if f.include?("/") || File.exist?(f)
+            info_formula Formulary.factory(f)
+          else
+            info_formula Formulary.find_with_priority(f)
+          end
         rescue FormulaUnavailableError
           # No formula with this name, try a blacklist lookup
           if (blacklist = blacklisted?(f))
@@ -54,23 +58,31 @@ module Homebrew
     puts Utils::JSON.dump(json)
   end
 
-  def github_fork
-    if (HOMEBREW_REPOSITORY/".git").directory?
-      if `git remote -v` =~ %r{origin\s+(https?://|git(?:@|://))github.com[:/](.+)/homebrew}
-        $2
-      end
+  def github_remote_path(remote, path)
+    if remote =~ %r{^(?:https?://|git(?:@|://))github\.com[:/](.+)/(.+?)(?:\.git)?$}
+      "https://github.com/#{$1}/#{$2}/blob/master/#{path}"
+    else
+      "#{remote}/#{path}"
     end
   end
 
   def github_info(f)
     if f.tap?
       user, repo = f.tap.split("/", 2)
-      path = f.path.relative_path_from(HOMEBREW_LIBRARY.join("Taps", f.tap))
-      "https://github.com/#{user}/#{repo}/blob/master/#{path}"
+      tap = Tap.fetch user, repo.gsub(/^homebrew-/, "")
+      if remote = tap.remote
+        path = f.path.relative_path_from(tap.path)
+        github_remote_path(remote, path)
+      else
+        f.path
+      end
     elsif f.core_formula?
-      user = f.path.parent.cd { github_fork }
-      path = f.path.relative_path_from(HOMEBREW_REPOSITORY)
-      "https://github.com/#{user}/homebrew/blob/master/#{path}"
+      if remote = git_origin
+        path = f.path.relative_path_from(HOMEBREW_REPOSITORY)
+        github_remote_path(remote, path)
+      else
+        f.path
+      end
     else
       f.path
     end
@@ -93,18 +105,13 @@ module Homebrew
 
     specs << "HEAD" if f.head
 
-    puts "#{f.full_name}: #{specs*", "}#{" (pinned)" if f.pinned?}"
+    attrs = []
+    attrs << "pinned at #{f.pinned_version}" if f.pinned?
+    attrs << "keg-only" if f.keg_only?
 
+    puts "#{f.full_name}: #{specs * ", "}#{" [#{attrs * ", "}]" if attrs.any?}"
     puts f.desc if f.desc
-
-    puts f.homepage
-
-    if f.keg_only?
-      puts
-      puts "This formula is keg-only."
-      puts f.keg_only_reason
-      puts
-    end
+    puts "#{Tty.em}#{f.homepage}#{Tty.reset}" if f.homepage
 
     conflicts = f.conflicts.map(&:name).sort!
     puts "Conflicts with: #{conflicts*", "}" unless conflicts.empty?
@@ -120,8 +127,7 @@ module Homebrew
       puts "Not installed"
     end
 
-    history = github_info(f)
-    puts "From: #{history}" if history
+    puts "From: #{Tty.em}#{github_info(f)}#{Tty.reset}"
 
     unless f.deps.empty?
       ohai "Dependencies"

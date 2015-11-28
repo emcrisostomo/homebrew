@@ -1,13 +1,13 @@
 class Gtkx3 < Formula
   desc "Toolkit for creating graphical user interfaces"
   homepage "http://gtk.org/"
-  url "https://download.gnome.org/sources/gtk+/3.16/gtk+-3.16.6.tar.xz"
-  sha256 "4d12726d0856a968b41802ae5c5971d7e9bac532717e309d3f81b9989da5ffbe"
+  url "https://download.gnome.org/sources/gtk+/3.18/gtk+-3.18.5.tar.xz"
+  sha256 "107aeb9a4244ce3c044becdd6dffc32d83202595181597180d4c736302a71852"
 
   bottle do
-    sha256 "a1226e7a1118b2a98f1a29fa90bec1c52ef09f421a74e153c912591ebb67a77a" => :yosemite
-    sha256 "dc3713238bd9b3ef591723783c5dc4a97800bc942bf142369107e267613e8bd6" => :mavericks
-    sha256 "1df033defb13297b40d11de57fc014eacdf3af16d88a51a28e1f57fddab7a49c" => :mountain_lion
+    sha256 "4ccff0082ffa0e3a4d4e1ed56b270433ea6ef14340f33d592994fbf88aa9baab" => :el_capitan
+    sha256 "b0bca321da9c996dd61d9ac6dea6532667a97f28680609d5628665a9ca2c73b4" => :yosemite
+    sha256 "da2667b1934198841c940cc41298f2d70f12d8f706fe78fece4054a8e483611a" => :mavericks
   end
 
   option :universal
@@ -23,6 +23,15 @@ class Gtkx3 < Formula
   depends_on "pango"
   depends_on "glib"
   depends_on "hicolor-icon-theme"
+
+  # Replace a keyword not supported by Snow Leopard's Objective-C compiler.
+  # https://bugzilla.gnome.org/show_bug.cgi?id=756770
+  if MacOS.version <= :snow_leopard
+    patch do
+      url "https://bugzilla.gnome.org/attachment.cgi?id=313599&format=raw"
+      sha256 "a090b19d3c15364914917d9893be292225e8b8a016f2833a5b8354f079475a73"
+    end
+  end
 
   def install
     ENV.universal_binary if build.universal?

@@ -3,45 +3,55 @@ require "language/go"
 class Glide < Formula
   desc "Simplified Go project management, dependency management, and vendoring"
   homepage "https://github.com/Masterminds/glide"
-  url "https://github.com/Masterminds/glide/archive/0.4.1.tar.gz"
-  sha256 "75dd21b94baa17899f98738a36555a410efcb2f1c0beb198004e8cbdb105a5f1"
+  url "https://github.com/Masterminds/glide/archive/0.7.2.tar.gz"
+  sha256 "368420de355fcce99187b8ccd5bf1025bbfb6ad394efeb0551b6b09911dfb9f3"
 
   bottle do
-    cellar :any
-    sha256 "5e3e65765888e4019bc3c78ef34fda831fa5f03439abe723d4319e06a8b1e2c8" => :yosemite
-    sha256 "5c53386ab69d241a8d16c473e6ba45f023dfe341f179b5688189d0b2622e4705" => :mavericks
-    sha256 "31e21b5ad11dceed8d8c56367ca9f170d5ceeda925f204cac604d59dffc533a0" => :mountain_lion
+    cellar :any_skip_relocation
+    sha256 "d763fca5637dc539410670ba14e9a9cc577a47d5316fa0e6191bcf09ced220f4" => :el_capitan
+    sha256 "702f859a36258b64170f31dbb259198eb757dcbc9e5db6a06dc3e7e808d42efd" => :yosemite
+    sha256 "192f9a7e4af551a25943e6f4e8ad0e5567c3e94937af8c915622b67ff11f0392" => :mavericks
   end
 
   depends_on "go" => :build
 
-  go_resource "github.com/kylelemons/go-gypsy" do
-    url "https://github.com/kylelemons/go-gypsy.git",
-      :revision => "42fc2c7ee9b8bd0ff636cd2d7a8c0a49491044c5"
+  go_resource "gopkg.in/yaml.v2" do
+    url "https://gopkg.in/yaml.v2.git",
+      :revision => "53feefa2559fb8dfa8d81baad31be332c97d6c77"
   end
 
   go_resource "github.com/Masterminds/cookoo" do
     url "https://github.com/Masterminds/cookoo.git",
-      :revision => "623f8762b2474f1ad6c2cac6bf331b8871591379"
+      :revision => "78aa11ce75e257c51be7ea945edb84cf19c4a6de"
+  end
+
+  go_resource "github.com/Masterminds/vcs" do
+    url "https://github.com/Masterminds/vcs.git",
+      :revision => "eaee272c8fa4514e1572e182faecff5be20e792a"
   end
 
   go_resource "github.com/codegangsta/cli" do
     url "https://github.com/codegangsta/cli.git",
-      :revision => "ad480243a8a6cda30acf7cd999ea3e5142154fde"
+      :revision => "70e3fa51ebed95df8c0fbe1519c1c1f9bc16bb13"
+  end
+
+  go_resource "github.com/Masterminds/semver" do
+    url "https://github.com/Masterminds/semver.git",
+      :revision => "6333b7bd29aad1d79898ff568fd90a8aa533ae82"
   end
 
   def install
-    (buildpath + "src/github.com/Masterminds/glide").install "glide.go", "cmd"
+    (buildpath + "src/github.com/Masterminds/glide").install "glide.go", "cmd", "gb", "util", "yaml"
 
     ENV["GOPATH"] = buildpath
     Language::Go.stage_deps resources, buildpath/"src"
 
-    system "go", "build", "-o", "glide", "-ldflags", "-X main.version 0.4.1", "#{buildpath}/src/github.com/Masterminds/glide/glide.go"
+    system "go", "build", "-o", "glide", "-ldflags", "-X main.version 0.7.2", "#{buildpath}/src/github.com/Masterminds/glide/glide.go"
     bin.install "glide"
   end
 
   test do
     version = pipe_output("#{bin}/glide --version")
-    assert_match /0.4.1/, version
+    assert_match /0.7.2/, version
   end
 end

@@ -26,9 +26,10 @@ class Gcc < Formula
   sha256 "5f835b04b5f7dd4f4d2dc96190ec1621b8d89f2dc6f638f9f8bc1b1014ba8cad"
 
   bottle do
-    sha256 "b9a41591f99a25a5d57d818953def46c4c654eb5ec8738b5eb975b366068abc3" => :yosemite
-    sha256 "c70b4f9c65930c0f127cb8a0b220d7b1494edea11218f5ba519b758c3eb7a2cd" => :mavericks
-    sha256 "131566719249be8795422d86fff0c4b2ee12bb58ad5320dcbff0af2c40d3ece7" => :mountain_lion
+    revision 3
+    sha256 "c52a4d2edf5261e25803e2ee67f5e477b9ec0d079c11348822efb34c369ddfce" => :el_capitan
+    sha256 "4596a645c71a10107fd786fec5400089dbc2ffe0aad568f548b3300ae3e9d758" => :yosemite
+    sha256 "29a8d7046b27a492bd41481a422810d9d8a4b037e1147559200b91fc0bbdb086" => :mavericks
   end
 
   option "with-java", "Build the gcj compiler"
@@ -121,9 +122,10 @@ class Gcc < Formula
     # -fPIC, -shared, -ldl and -rdynamic."
     args << "--enable-plugin" if MacOS.version > :tiger
 
-    # Otherwise make fails during comparison at stage 3
-    # See: http://gcc.gnu.org/bugzilla/show_bug.cgi?id=45248
-    args << "--with-dwarf2" if MacOS.version < :leopard
+    # The pre-Mavericks toolchain requires the older DWARF-2 debugging data
+    # format to avoid failure during the stage 3 comparison of object files.
+    # See: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=45248
+    args << "--with-dwarf2" if MacOS.version <= :mountain_lion
 
     args << "--disable-nls" if build.without? "nls"
 
@@ -257,3 +259,22 @@ index 44d0750..4df2a9c 100644
 
  $(LIBGCCJIT_SONAME_SYMLINK): $(LIBGCCJIT_FILENAME)
 	ln -sf $(LIBGCCJIT_FILENAME) $(LIBGCCJIT_SONAME_SYMLINK)
+diff --git a/gcc/jit/jit-playback.c b/gcc/jit/jit-playback.c
+index 925fa86..01cfd4b 100644
+--- a/gcc/jit/jit-playback.c
++++ b/gcc/jit/jit-playback.c
+@@ -2416,6 +2416,15 @@ invoke_driver (const char *ctxt_progname,
+      time.  */
+   ADD_ARG ("-fno-use-linker-plugin");
+
++#if defined (DARWIN_X86) || defined (DARWIN_PPC)
++  /* OS X's linker defaults to treating undefined symbols as errors.
++     If the context has any imported functions or globals they will be
++     undefined until the .so is dynamically-linked into the process.
++     Ensure that the driver passes in "-undefined dynamic_lookup" to the
++     linker.  */
++  ADD_ARG ("-Wl,-undefined,dynamic_lookup");
++#endif
++
+   /* pex argv arrays are NULL-terminated.  */
+   argvec.safe_push (NULL);

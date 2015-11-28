@@ -1,22 +1,17 @@
 class Jenkins < Formula
   desc "Extendable open source continuous integration server"
   homepage "https://jenkins-ci.org"
-  url "http://mirrors.jenkins-ci.org/war/1.622/jenkins.war"
-  sha256 "e219546e9db0bdf913ceee04ab3f79fcbbb27ac7ca27619d184b82f93457b899"
-
-  bottle do
-    cellar :any
-    sha256 "dfcbc53fd68537da7975209ed8adee8887e0fd106c86a44823defbc580ba1ca4" => :yosemite
-    sha256 "74c689f2e749b3ac26b8a4cf4631649d0565696b10aa430e1168f3fc5a60917b" => :mavericks
-    sha256 "356c460681bb460d3f4cdb89b86446b4c899db6cf6cdf5018a448fb86e266b96" => :mountain_lion
-  end
+  url "http://mirrors.jenkins-ci.org/war/1.638/jenkins.war"
+  sha256 "08d60e5f7db3cb4cb650a647dea60d4e1cb285a379bf3d3de0f62309854d7dcd"
 
   head do
     url "https://github.com/jenkinsci/jenkins.git"
     depends_on "maven" => :build
   end
 
-  depends_on :java => "1.6+"
+  bottle :unneeded
+
+  depends_on :java => "1.7+"
 
   def install
     if build.head?
@@ -56,6 +51,21 @@ class Jenkins < Formula
 
   def caveats; <<-EOS.undent
     Note: When using launchctl the port will be 8080.
-    EOS
+  EOS
+  end
+
+  test do
+    ENV["JENKINS_HOME"] = testpath
+    pid = fork do
+      exec "#{bin}/jenkins"
+    end
+    sleep 60
+
+    begin
+      assert_match /"mode":"NORMAL"/, shell_output("curl localhost:8080/api/json")
+    ensure
+      Process.kill("SIGINT", pid)
+      Process.wait(pid)
+    end
   end
 end

@@ -10,6 +10,14 @@ class Ntopng < Formula
     sha256 "355c68400b80698448e8197316a015cb88563600cb8a619df20d0bef2e79b0ca" => :mountain_lion
   end
 
+  head do
+    url "https://github.com/ntop/ntopng.git", :branch => "dev"
+
+    resource "nDPI" do
+      url "https://github.com/ntop/nDPI.git", :branch => "dev"
+    end
+  end
+
   depends_on "autoconf" => :build
   depends_on "automake" => :build
   depends_on "pkg-config" => :build
@@ -26,6 +34,13 @@ class Ntopng < Formula
   depends_on "redis"
 
   def install
+    if build.head?
+      resource("nDPI").stage do
+        system "./autogen.sh"
+        system "make"
+        (buildpath/"nDPI").install Dir["*"]
+      end
+    end
     system "./autogen.sh"
     system "./configure", "--prefix=#{prefix}"
     system "make"

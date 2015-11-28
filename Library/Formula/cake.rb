@@ -1,8 +1,10 @@
 class Cake < Formula
   desc "Cake (C# Make) is a build automation system with a C# DSL."
   homepage "http://cakebuild.net/"
-  url "https://github.com/cake-build/cake/releases/download/v0.5.1/Cake-bin-v0.5.1.zip"
-  sha256 "ff431d845575b0be9e355caa9f44a82ea015d8b849eeafcdaee0904c3fb6da53"
+  url "https://github.com/cake-build/cake/releases/download/v0.6.0/Cake-bin-v0.6.0.zip"
+  sha256 "0d7eefc816d0f3f3ab2a0f438bbdf5d2b744c0ca243459f329ae9a3672115856"
+
+  bottle :unneeded
 
   depends_on "mono" => :recommended
 

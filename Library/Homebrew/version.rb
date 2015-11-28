@@ -299,7 +299,7 @@ class Version
 
     # e.g. boost_1_39_0
     m = /((?:\d+_)+\d+)$/.match(stem)
-    return m.captures.first.gsub("_", ".") unless m.nil?
+    return m.captures.first.tr("_", ".") unless m.nil?
 
     # e.g. foobar-4.5.1-1
     # e.g. unrtf_0.20.4-1
@@ -326,6 +326,13 @@ class Version
     # e.g. http://ftpmirror.gnu.org/libidn/libidn-1.29-win64.zip
     # e.g. http://ftpmirror.gnu.org/libmicrohttpd/libmicrohttpd-0.9.17-w32.zip
     m = /-(\d+\.\d+(?:\.\d+)?)-w(?:in)?(?:32|64)$/.match(stem)
+    return m.captures.first unless m.nil?
+
+    # Opam packages
+    # e.g. https://opam.ocaml.org/archives/sha.1.9+opam.tar.gz
+    # e.g. https://opam.ocaml.org/archives/lablgtk.2.18.3+opam.tar.gz
+    # e.g. https://opam.ocaml.org/archives/easy-format.1.0.2+opam.tar.gz
+    m = /\.(\d+\.\d+(?:\.\d+)?)\+opam$/.match(stem)
     return m.captures.first unless m.nil?
 
     # e.g. http://ftpmirror.gnu.org/mtools/mtools-4.0.18-1.i686.rpm

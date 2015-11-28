@@ -1,12 +1,16 @@
 class Bfg < Formula
-  desc "Alternative to git-filter-branch, written in Scala"
+  desc "Remove large files or passwords from Git history like git-filter-branch"
   homepage "https://rtyley.github.io/bfg-repo-cleaner/"
-  url "https://repo1.maven.org/maven2/com/madgag/bfg/1.12.3/bfg-1.12.3.jar"
-  sha256 "2e237631235cfb8cc2d49dabb986389851dca8a28a07083345274b443dfa4911"
+  url "https://repo1.maven.org/maven2/com/madgag/bfg/1.12.5/bfg-1.12.5.jar"
+  sha256 "fa797cc6e5878a3b7b61104f3a3ba3d43987e2a7a9c596cb9d137c7b95e6b082"
+
+  bottle :unneeded
+
+  depends_on :java => "1.7+"
 
   def install
-    libexec.install "bfg-1.12.3.jar"
-    bin.write_jar_script libexec/"bfg-1.12.3.jar", "bfg"
+    libexec.install "bfg-1.12.5.jar"
+    bin.write_jar_script libexec/"bfg-1.12.5.jar", "bfg"
   end
 
   test do

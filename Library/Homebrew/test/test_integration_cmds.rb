@@ -1,3 +1,4 @@
+require "bundler"
 require "testing_env"
 
 class IntegrationCommandTests < Homebrew::TestCase
@@ -40,7 +41,7 @@ class IntegrationCommandTests < Homebrew::TestCase
   end
 
   def test_version
-    assert_equal HOMEBREW_VERSION.to_s,
+    assert_match HOMEBREW_VERSION.to_s,
                  cmd("--version")
   end
 
@@ -65,7 +66,7 @@ class IntegrationCommandTests < Homebrew::TestCase
   end
 
   def test_env
-    assert_match "CMAKE_PREFIX_PATH=\"#{HOMEBREW_PREFIX}\"",
+    assert_match %r{CMAKE_PREFIX_PATH="#{HOMEBREW_PREFIX}[:"]},
                  cmd("--env")
   end
 

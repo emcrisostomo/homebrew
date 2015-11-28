@@ -3,16 +3,16 @@ require "language/go"
 class DockerSwarm < Formula
   desc "Turn a pool of Docker hosts into a single, virtual host"
   homepage "https://github.com/docker/swarm"
-  url "https://github.com/docker/swarm/archive/v0.3.0.tar.gz"
-  sha256 "3db5f261483b87330743e16b340a2f76349e2dcca6b1dd85b9e1b1288d50af22"
+  url "https://github.com/docker/swarm/archive/v1.0.0.tar.gz"
+  sha256 "85951f91a2e3b6b82ac775bafce3fc76dd29aa2cdeb6a3ad84a97116fd72d2d8"
 
   head "https://github.com/docker/swarm.git"
 
   bottle do
-    cellar :any
-    sha256 "6a8a15a511cd1bf5f10c9e53af8784d06d51fdd359ab533dfe8daaa7a6c872b3" => :yosemite
-    sha256 "33f60f41343326f549c886ed60564a1672877f77c8636962d8c4c47c10d62f05" => :mavericks
-    sha256 "e6b63640e4ff88d073c0449ea23a3c8c3ff46caffc72c3e4d4a2e159ffade10d" => :mountain_lion
+    cellar :any_skip_relocation
+    sha256 "82c2d64fcc9893f077244eaee10cc76d27fad5f7ae250d6e2cd4d9ac73b85dc4" => :el_capitan
+    sha256 "652c451d30e33987c2607d86b62387a1373ec4d48b1861e5c34ff0d17d96ff3d" => :yosemite
+    sha256 "77401660d38f872dd0f2abc548fb67f927f49e8233f3651dfd6b0568bb508838" => :mavericks
   end
 
   depends_on "go" => :build
