@@ -1,15 +1,14 @@
 class Node < Formula
   desc "Platform built on the V8 JavaScript runtime to build network applications"
   homepage "https://nodejs.org/"
-  url "https://nodejs.org/dist/v5.1.0/node-v5.1.0.tar.gz"
-  sha256 "25b2d3b7dd57fe47a483539fea240a3c6bbbdab4d89a45a812134cf1380ecb94"
+  url "https://nodejs.org/dist/v5.5.0/node-v5.5.0.tar.gz"
+  sha256 "d69b18cc20699a35434858fb853997616762280610a510ec4b4ff1a94798b432"
   head "https://github.com/nodejs/node.git"
 
   bottle do
-    revision 1
-    sha256 "485007341181ec9842a4fcef051336037cdfd48075490af57d8f82d2d1a829e6" => :el_capitan
-    sha256 "a21e68fc0915e0834b0dea8a4e4afa3df59dd6417704ca4e4bb86c8b13016b20" => :yosemite
-    sha256 "194788b88b5846de2304a6a8c953b4df654556621a0e37161b718a96c4428522" => :mavericks
+    sha256 "880f846487b1f2085d53c2a2819aaeaaf6f1b095534c82e248f81879faadba65" => :el_capitan
+    sha256 "90facf8a5d40b0d89670e2a6f4f9ce1da3447f067c2d6df077c35df199608f97" => :yosemite
+    sha256 "991ebc6035ef3d96e1fa9389580113805e93a3a96336c61ace1382197d49f03c" => :mavericks
   end
 
   option "with-debug", "Build with debugger hooks"
@@ -37,8 +36,8 @@ class Node < Formula
   # We will accept *important* npm patch releases when necessary.
   # https://github.com/Homebrew/homebrew/pull/46098#issuecomment-157802319
   resource "npm" do
-    url "https://registry.npmjs.org/npm/-/npm-3.3.12.tgz"
-    sha256 "09475d7096731d93c0aacd7dfe58794d67c52ee6562675aee6c1f734ddba8158"
+    url "https://registry.npmjs.org/npm/-/npm-3.5.3.tgz"
+    sha256 "a6f62a53d8f8ce856c2b2b7908c466fe8a6cc44f7af915b56b70d8039f9414f6"
   end
 
   resource "icu4c" do
@@ -78,6 +77,10 @@ class Node < Formula
         # This copies back over the vanilla `package.json` that is expected.
         # https://github.com/Homebrew/homebrew/issues/46131#issuecomment-157845008
         cp buildpath/"npm_install/package.json", libexec/"npm/lib/node_modules/npm"
+        # Remove manpage symlinks from the buildpath, they are breaking bottle
+        # creation. The real manpages are living in libexec/npm/lib/node_modules/npm/man/
+        # https://github.com/Homebrew/homebrew/pull/47081#issuecomment-165280470
+        rm_rf libexec/"npm/share/"
       end
 
       if build.with? "completion"

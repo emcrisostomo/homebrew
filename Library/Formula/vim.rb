@@ -2,8 +2,8 @@ class Vim < Formula
   desc "Vi \"workalike\" with many additional features"
   homepage "http://www.vim.org/"
   # *** Vim should be updated no more than once every 7 days ***
-  url "https://github.com/vim/vim/archive/v7.4.936.tar.gz"
-  sha256 "bc25d2e5eafadc40c6b156d87497ab5259992439b4640498725bb1dee5791451"
+  url "https://github.com/vim/vim/archive/v7.4.1190.tar.gz"
+  sha256 "ac0d719a83b753a8d3c6ac209805b90bfc993960b8ff8fe7d10fc8597ca8f560"
   head "https://github.com/vim/vim.git"
 
   bottle :disable, "To use the user's Python."
@@ -90,7 +90,6 @@ class Vim < Formula
                           "--enable-multibyte",
                           "--with-tlib=ncurses",
                           "--enable-cscope",
-                          "--with-features=huge",
                           "--with-compiledby=Homebrew",
                           *opts
     system "make"

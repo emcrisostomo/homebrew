@@ -1,15 +1,15 @@
 class Arangodb < Formula
   desc "Universal open-source database with a flexible data model"
   homepage "https://www.arangodb.com/"
-  url "https://www.arangodb.com/repositories/Source/ArangoDB-2.7.1.tar.gz"
-  sha256 "a0f5cb20bdfa9750f43ee57a559a370a22bfc3f184a9d6d2d30d0bdadf639e12"
+  url "https://www.arangodb.com/repositories/Source/ArangoDB-2.8.1.tar.gz"
+  sha256 "c5ddfcd33aa935d51085ecd5a52df6872d06fc5c09f645526992a7ba7d5ba985"
 
   head "https://github.com/arangodb/arangodb.git", :branch => "unstable"
 
   bottle do
-    sha256 "46aa15e93882565f839373776f5f46cc4f0720b177efd70080077653ee3d2449" => :el_capitan
-    sha256 "56e02f6ccce24014372f0c9aa84c8a126970b16d9ca2fa80c7999416ffad784d" => :yosemite
-    sha256 "774e7f7467af35cef3599e561083fce564df81fb4dd304a3937d628d1070b4b6" => :mavericks
+    sha256 "e760352be0104bb2903e53062a111df3a34e46b8e59ed8c56f51b88826d04a46" => :el_capitan
+    sha256 "101dc0d14e5fb3aeeea7262a0e69dfe90cfc8026538c0030c25d95a0d21cb868" => :yosemite
+    sha256 "6f88c911eb5b1279eb98dd85d68a96521245b0c07dbfc47b97142352af6a31c7" => :mavericks
   end
 
   depends_on "go" => :build
@@ -40,12 +40,12 @@ class Arangodb < Formula
 
     system "./configure", *args
     system "make", "install"
-
-    (var/"arangodb").mkpath
-    (var/"log/arangodb").mkpath
   end
 
   def post_install
+    (var/"arangodb").mkpath
+    (var/"log/arangodb").mkpath
+
     system "#{sbin}/arangod" + (build.head? ? "-unstable" : ""), "--upgrade", "--log.file", "-"
   end
 

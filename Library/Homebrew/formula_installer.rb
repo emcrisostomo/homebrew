@@ -286,7 +286,7 @@ class FormulaInstaller
   def install_requirement_default_formula?(req, dependent, build)
     return false unless req.default_formula?
     return true unless req.satisfied?
-    return false if req.tags.include?(:run)
+    return false if req.run?
     install_bottle_for?(dependent, build) || build_bottle?
   end
 
@@ -348,6 +348,7 @@ class FormulaInstaller
     args  = dependent.build.used_options
     args |= dependent == formula ? options : inherited_options
     args |= Tab.for_formula(dependent).used_options
+    args &= dependent.options
     BuildOptions.new(args, dependent.options)
   end
 
@@ -503,6 +504,7 @@ class FormulaInstaller
     args << "--verbose" if verbose?
     args << "--debug" if debug?
     args << "--cc=#{ARGV.cc}" if ARGV.cc
+    args << "--default-fortran-flags" if ARGV.include? "--default-fortran-flags"
 
     if ARGV.env
       args << "--env=#{ARGV.env}"
@@ -572,7 +574,9 @@ class FormulaInstaller
       end
     end
 
-    raise "Empty installation" if Dir["#{formula.prefix}/*"].empty?
+    if !formula.prefix.directory? || Keg.new(formula.prefix).empty_installation?
+      raise "Empty installation"
+    end
 
   rescue Exception
     ignore_interrupts do
@@ -741,6 +745,8 @@ class FormulaInstaller
 
     tab.tap = formula.tap
     tab.poured_from_bottle = true
+    tab.time = Time.now.to_i
+    tab.head = Homebrew.git_head
     tab.write
   end
 

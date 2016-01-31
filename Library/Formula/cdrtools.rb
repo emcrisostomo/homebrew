@@ -16,20 +16,16 @@ class Cdrtools < Formula
   end
 
   bottle do
-    sha256 "b5a0c5a733c4f33e3ff186f77eeb54a560b1cc9a0ab4436d05996a92822ca72d" => :el_capitan
-    sha256 "a7514a01e0318ae4a3d992faa39e411b960f1ff9191903c37c0ed6805e6e76f3" => :yosemite
-    sha256 "79aa34f5484ca2b160902805379135d291a22148331ed6247984883d76f6f57d" => :mavericks
+    revision 1
+    sha256 "4724b3dfe367cf28dbd98dad6ddd47179e5b5d1b599a8fff8f0fa8cc4621acb2" => :el_capitan
+    sha256 "5370586e423d9b842b7ebd0cdb3dd2c763c433be9896bcab636cc56ecd5e0634" => :yosemite
+    sha256 "1b3f3ab5baf44ad31f8d09e36de6df59901ce036cc681c54187fe5f41dc8bb94" => :mavericks
   end
 
   devel do
-    url "https://downloads.sourceforge.net/project/cdrtools/alpha/cdrtools-3.02a02.tar.bz2"
-    mirror "https://fossies.org/linux/misc/cdrtools-3.02a02.tar.bz2"
-    sha256 "b5c33d6cfbe265806f24f365bdb885dfe35194ef716f4b6f809b4377ec159c05"
-
-    patch do
-      url "https://downloads.sourceforge.net/project/cdrtools/alpha/cdrtools-3.02a02-fix-20151126-mkisofs.patch"
-      sha256 "ae7eb217a4f4b1dd8399899282306fc75aaa3b62b269e7f189448657e3944ac6"
-    end
+    url "https://downloads.sourceforge.net/project/cdrtools/alpha/cdrtools-3.02a06.tar.bz2"
+    mirror "https://fossies.org/linux/misc/cdrtools-3.02a06.tar.bz2"
+    sha256 "ed79ab99414352ea9305163660b52b6a82394466bae03aebdbe2150997835eb1"
   end
 
   depends_on "smake" => :build

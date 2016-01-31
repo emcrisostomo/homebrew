@@ -1,22 +1,19 @@
 class Bazel < Formula
   desc "Google's own build tool"
   homepage "http://bazel.io/"
-  url "https://github.com/bazelbuild/bazel/archive/0.1.1.tar.gz"
-  sha256 "49d11d467cf9e32dea618727198592577fbe76ff2e59217c53e3515ddf61cd95"
+  url "https://github.com/bazelbuild/bazel/archive/0.1.4.tar.gz"
+  sha256 "7668dea0e3455cb10d0ac7b59e81de533edabea875fde77deb8d7a7bf24feaf4"
 
   bottle do
-    cellar :any
-    revision 1
-    sha256 "4e2ceee3d1a79339ab90377352b93631960bf4599853cea765116e7e6d0bc4ff" => :el_capitan
-    sha256 "63396e0919c7034ce3a6fd0a91567f1ffcd352a2b62230f7177d74d5be49d992" => :yosemite
-    sha256 "75f9ed1b50fef939e5806818835205fe11f4494bfe0aeb65ddfb4a8a1763146a" => :mavericks
+    cellar :any_skip_relocation
+    sha256 "3f2a2c5d3041fc41d39305073cb63a5744ec73d1e86cf71c6ff7bc73ec0f09ce" => :el_capitan
+    sha256 "dcb6dbcb618acb7953ae217f121b54eda5887d70f1e0896fad489dc4a9dfbfc7" => :yosemite
   end
 
   depends_on :java => "1.8+"
+  depends_on :macos => :yosemite
 
   def install
-    # Replace the default system wide rc path to
-    # /usr/local/etc/bazel/bazel.bazelrc
     inreplace "src/main/cpp/blaze_startup_options.cc",
       "/etc/bazel.bazelrc",
       "#{etc}/bazel/bazel.bazelrc"
@@ -24,6 +21,7 @@ class Bazel < Formula
     ENV["EMBED_LABEL"] = "#{version}-homebrew"
 
     system "./compile.sh"
+    system "./output/bazel", "build", "scripts:bash_completion"
 
     (prefix/"base_workspace").mkdir
     cp_r Dir["base_workspace/*"], (prefix/"base_workspace"), :dereference_root => true
@@ -34,10 +32,13 @@ class Bazel < Formula
       fetch --package_path=%workspace%:#{prefix}/base_workspace
     EOS
     (etc/"bazel").install prefix/"etc/bazel.bazelrc"
+
+    bash_completion.install "bazel-bin/scripts/bazel-complete.bash"
+    zsh_completion.install "scripts/zsh_completion/_bazel"
   end
 
   test do
-    (testpath/"WORKSPACE").write("")
+    touch testpath/"WORKSPACE"
 
     (testpath/"ProjectRunner.java").write <<-EOS.undent
       public class ProjectRunner {
