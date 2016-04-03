@@ -1,15 +1,15 @@
 class Passpie < Formula
   desc "Manage login credentials from the terminal"
   homepage "https://github.com/marcwebbie/passpie"
-  url "https://pypi.python.org/packages/source/p/passpie/passpie-1.1.1.tar.gz"
-  sha256 "cc28d8813690042b62eff798dc807dd53864d1d918fff877b7fd0c1c9d556130"
+  url "https://pypi.python.org/packages/source/p/passpie/passpie-1.4.1.tar.gz"
+  sha256 "531957f343948dcc73883418377a0902cec4f1c3690e80b664b5a9eccb36a393"
   head "https://github.com/marcwebbie/passpie.git"
 
   bottle do
     cellar :any_skip_relocation
-    sha256 "6c916faedd52c2421b7ef4407c5e036ad653ead17620b04ee47305cc745310f3" => :el_capitan
-    sha256 "9bd1106249dc25a0566e9963e00f0ff725653cf5fb58fe02d88fe9b92e66df93" => :yosemite
-    sha256 "35f63abfb770a087312aa1dc517fd87ab42be4f4e6ea17cda6adac262d013eb1" => :mavericks
+    sha256 "77a716138f7dbff10b2e1eb82ce88825a8840407cb97d300575d22af06f30b1b" => :el_capitan
+    sha256 "fd70a360480a82bce3450e66e5a8299cb1262196bd71d2ab082b2721f4dc441b" => :yosemite
+    sha256 "7f8e2edb54aa8e0188265ca062d611e30185eb498211764f8595ca9e90b8afaa" => :mavericks
   end
 
   depends_on :python if MacOS.version <= :snow_leopard
@@ -36,8 +36,8 @@ class Passpie < Formula
   end
 
   resource "tinydb" do
-    url "https://pypi.python.org/packages/source/t/tinydb/tinydb-3.1.1.tar.gz"
-    sha256 "b704d94b44c5dbc4f4b038f22aa30b4c7398a8d52881767b4e53edeaeab6d3d0"
+    url "https://pypi.python.org/packages/source/t/tinydb/tinydb-3.1.2.zip"
+    sha256 "6d9df6c30fc37dad487c23bfadfa6161de422a7f2b16b55d779df88559fc9095"
   end
 
   def install
@@ -57,19 +57,6 @@ class Passpie < Formula
   end
 
   test do
-    system bin/"passpie", "-D", "temp_db", "init", "--passphrase", "s3cr3t"
-    system bin/"passpie", "-D", "temp_db", "add", "foo@bar", "--random"
-    system bin/"passpie", "-D", "temp_db", "add", "spam@egg", "--random"
-    system bin/"passpie", "-D", "temp_db", "update", "foo@bar", "--comment", "'dummy comment'"
-    system bin/"passpie", "-D", "temp_db", "export", "passwords.db", "--passphrase", "s3cr3t"
-    system bin/"passpie", "-D", "temp_db", "remove", "-y", "foo@bar"
-    system bin/"passpie", "-D", "temp_db", "remove", "-y", "spam@egg"
-    system bin/"passpie", "-D", "temp_db", "import", "passwords.db"
-    system bin/"passpie", "-D", "temp_db", "copy", "foo@bar", "--passphrase", "s3cr3t"
-    system bin/"passpie", "-D", "temp_db", "init", "--force", "--passphrase", "s3cr3t"
-    system bin/"passpie", "-D", "temp_db", "add", "foo@bar", "--password", "'sup3r p4ssw0rd'"
-    system bin/"passpie", "-D", "temp_db", "add", "foo@bar", "--force", "--random"
-    system bin/"passpie", "-D", "temp_db", "add", "foo2@bar2", "--random", "--pattern", "'[a-z]{10} [A-Z]{10} [0-9]{10} [\!\@\#\$\%\^\&\*]{10}'"
-    system bin/"passpie", "-D", "temp_db", "status", "--passphrase", "s3cr3t"
+    system bin/"passpie", "-D", "passpiedb", "init", "--force", "--passphrase", "s3cr3t"
   end
 end

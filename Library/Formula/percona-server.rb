@@ -1,25 +1,13 @@
 class PerconaServer < Formula
   desc "Drop-in MySQL replacement"
   homepage "https://www.percona.com"
-  url "https://www.percona.com/downloads/Percona-Server-5.6/Percona-Server-5.6.28-76.1/source/tarball/percona-server-5.6.28-76.1.tar.gz"
-  version "5.6.28-76.1"
-  sha256 "ab8ab794a58a82132645ae84b74de91c7f9a5bcf81f2162628ce8976a00a4fd4"
-
-  devel do
-    url "https://www.percona.com/downloads/Percona-Server-5.7/Percona-Server-5.7.10-1rc1/source/tarball/percona-server-5.7.10-1rc1.tar.gz"
-    version "5.7.10-1rc1"
-    sha256 "68de79af4a761522f436b89eeb5bbb43a56dccc2bc352d38c79b6e6be0c4106c"
-
-    resource "boost" do
-      url "https://downloads.sourceforge.net/project/boost/boost/1.59.0/boost_1_59_0.tar.bz2"
-      sha256 "727a932322d94287b62abb1bd2d41723eec4356a7728909e38adb65ca25241ca"
-    end
-  end
+  url "https://www.percona.com/downloads/Percona-Server-5.7/Percona-Server-5.7.11-4/source/tarball/percona-server-5.7.11-4.tar.gz"
+  sha256 "3634d2262e646db11b03837561acb0e084f33e5a597957506cf4c333ea811921"
 
   bottle do
-    sha256 "9ecb4fd01c4e6915f43aea950371cbea98ee483276f8e67a6d8a3e14e1d7a0d9" => :el_capitan
-    sha256 "edadb9ce8663d7324bcb5b88419f940445e6e8672b01dca1695e9b9c2bcf645d" => :yosemite
-    sha256 "fa5eb750936ad85fab7247dbd77308bf53aecd30aa709260f1d3b9cd2e21e3fc" => :mavericks
+    sha256 "b29c60effc8a8bd01865bab31db4d19a8e6cf3f00668ae1aafbe3718e494fe23" => :el_capitan
+    sha256 "22161689bd19379470c96f8748362110409bf9fe28df524702e16b8c2e99c959" => :yosemite
+    sha256 "ce865776bf9f4413fa278f9965dd877b0e5e2ccafb8ac31aa8d2de04984ddb1b" => :mavericks
   end
 
   option :universal
@@ -42,21 +30,29 @@ class PerconaServer < Formula
     :because => "percona, mariadb, and mysql install the same binaries."
   conflicts_with "mysql-connector-c",
     :because => "both install MySQL client libraries"
+  conflicts_with "mariadb-connector-c",
+    :because => "both install plugins"
 
   fails_with :llvm do
     build 2334
     cause "https://github.com/Homebrew/homebrew/issues/issue/144"
   end
 
+  resource "boost" do
+    url "https://downloads.sourceforge.net/project/boost/boost/1.59.0/boost_1_59_0.tar.bz2"
+    sha256 "727a932322d94287b62abb1bd2d41723eec4356a7728909e38adb65ca25241ca"
+  end
+
   # Where the database files should be located. Existing installs have them
-  # under var/percona, but going forward they will be under var/msyql to be
+  # under var/percona, but going forward they will be under var/mysql to be
   # shared with the mysql and mariadb formulae.
   def datadir
     @datadir ||= (var/"percona").directory? ? var/"percona" : var/"mysql"
   end
 
-  def pour_bottle?
-    datadir == var/"mysql"
+  pour_bottle? do
+    reason "The bottle needs a var/mysql datadir (yours is var/percona)."
+    satisfy { datadir == var/"mysql" }
   end
 
   def install
@@ -100,13 +96,11 @@ class PerconaServer < Formula
     # https://bugs.launchpad.net/percona-server/+bug/1531446
     args.concat %W[-DWITHOUT_TOKUDB=1]
 
-    if build.devel?
-      # MySQL >5.7.x mandates Boost as a requirement to build & has a strict
-      # version check in place to ensure it only builds against expected release.
-      # This is problematic when Boost releases don't align with MySQL releases.
-      (buildpath/"boost_1_59_0").install resource("boost")
-      args << "-DWITH_BOOST=#{buildpath}/boost_1_59_0"
-    end
+    # MySQL >5.7.x mandates Boost as a requirement to build & has a strict
+    # version check in place to ensure it only builds against expected release.
+    # This is problematic when Boost releases don't align with MySQL releases.
+    (buildpath/"boost_1_59_0").install resource("boost")
+    args << "-DWITH_BOOST=#{buildpath}/boost_1_59_0"
 
     # To enable unit testing at build, we need to download the unit testing suite
     if build.with? "test"
@@ -138,9 +132,6 @@ class PerconaServer < Formula
     # See: https://github.com/Homebrew/homebrew/issues/4975
     rm_rf prefix+"data"
 
-    # Link the setup script into bin
-    bin.install_symlink prefix/"scripts/mysql_install_db"
-
     # Fix up the control script and link into bin
     inreplace "#{prefix}/support-files/mysql.server" do |s|
       s.gsub!(/^(PATH=".*)(")/, "\\1:#{HOMEBREW_PREFIX}/bin\\2")
@@ -149,25 +140,6 @@ class PerconaServer < Formula
     end
 
     bin.install_symlink prefix/"support-files/mysql.server"
-
-    # mysqlaccess deprecated on 5.6.17, and removed in 5.7.4.
-    # See: https://bugs.mysql.com/bug.php?id=69012
-    if build.stable?
-      # Move mysqlaccess to libexec
-      libexec.mkpath
-      mv "#{bin}/mysqlaccess", libexec
-      mv "#{bin}/mysqlaccess.conf", libexec
-    end
-  end
-
-  def post_install
-    # Make sure that data directory exists
-    datadir.mkpath
-    unless File.exist? "#{datadir}/mysql/user.frm"
-      ENV["TMPDIR"] = nil
-      system "#{bin}/mysql_install_db", "--verbose", "--user=#{ENV["USER"]}",
-        "--basedir=#{prefix}", "--datadir=#{datadir}", "--tmpdir=/tmp"
-    end
   end
 
   def caveats; <<-EOS.undent
@@ -176,6 +148,9 @@ class PerconaServer < Formula
 
     To connect:
         mysql -uroot
+
+    To initialize the data directory:
+        mysqld --initialize --datadir=#{datadir} --user=#{ENV["USER"]}
     EOS
   end
 

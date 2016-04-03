@@ -1,8 +1,8 @@
 class Gitbucket < Formula
-  desc "GitHub clone"
+  desc "Git platform powered by Scala offering"
   homepage "https://github.com/gitbucket/gitbucket"
-  url "https://github.com/gitbucket/gitbucket/releases/download/3.10.1/gitbucket.war"
-  sha256 "a689d8fd221db8e0fc437127bf0ce82ccef98c1acc9bc83067496ed286b5326f"
+  url "https://github.com/gitbucket/gitbucket/releases/download/3.13/gitbucket.war"
+  sha256 "4f8fcaabe7278380cf574d57e9f49862a4f86c98ee03bad68801f50846f80c57"
 
   head do
     url "https://github.com/gitbucket/gitbucket.git"
@@ -10,6 +10,8 @@ class Gitbucket < Formula
   end
 
   bottle :unneeded
+
+  depends_on :java => "1.8+"
 
   def install
     if build.head?
